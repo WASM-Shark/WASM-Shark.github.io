@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CFG Analysis &mdash; WASMShark — WebAssembly Malware Analyzer</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b2a7c96b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Detection Rules" href="rules.html" />
+    <link rel="prev" title="eBPF Runtime Monitor" href="ebpf_monitor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #1a1a2e" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            WASMShark
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-1-clone-and-setup">Step 1 — Clone and Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-2-python-dependencies">Step 2 — Python Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-3-ebpf-runtime-monitor">Step 3 — eBPF Runtime Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-4-wasabi-dynamic-instrumentation">Step 4 — Wasabi Dynamic Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-5-node-js-and-long-js">Step 5 — Node.js and long.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-6-wasmtime-for-ebpf-demos">Step 6 — wasmtime (for eBPF demos)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-7-graphviz-for-cfg-visualization">Step 7 — Graphviz (for CFG visualization)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-8-generate-test-samples">Step 8 — Generate Test Samples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verify-installation">Verify Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-scan">Basic Scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#full-analysis">Full Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#static-dynamic-analysis">Static + Dynamic Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#view-dynamic-cfg">View Dynamic CFG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#directory-scan-with-csv">Directory Scan with CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#diff-two-samples">Diff Two Samples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#ebpf-runtime-monitor">eBPF Runtime Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#w-x-memory-detection">W+X Memory Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#watch-mode">Watch Mode</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Analysis Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="static_analysis.html">Static Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#binary-parser">Binary Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#disassembler">Disassembler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="static_analysis.html#per-function-metrics">Per-Function Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#cfg-builder">CFG Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#taint-analysis">Taint Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#entropy-analysis">Entropy Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#crypto-constant-detection">Crypto Constant Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#scoring-engine">Scoring Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#import-fingerprinting-imphash">Import Fingerprinting (Imphash)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_analysis.html">Dynamic Analysis (Wasabi)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#runtime-metrics-collected">Runtime Metrics Collected</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#static-dynamic-correlations">Static ↔ Dynamic Correlations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#state-machine-extraction">State Machine Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#dynamic-cfg-reconstruction">Dynamic CFG Reconstruction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dynamic_analysis.html#cfg-node-colors">CFG Node Colors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#supported-samples">Supported Samples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ebpf_monitor.html">eBPF Runtime Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#alert-levels">Alert Levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#w-x-memory-detection-demo">W+X Memory Detection Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#runtime-report-fields">Runtime Report Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#threat-score-calculation">Threat Score Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CFG Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#algorithms">Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lengauer-tarjan-dominance-tree">Lengauer-Tarjan Dominance Tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tarjan-s-scc-algorithm">Tarjan’s SCC Algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#natural-loop-detection">Natural Loop Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#irreducible-cfg-detection">Irreducible CFG Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-count-estimation">Path Count Estimation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cfg-fingerprinting">CFG Fingerprinting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-cfg-analysis">Running CFG Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anomaly-detection">Anomaly Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-overview-export">Module Overview Export</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Detection Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#rule-format">Rule Format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rules.html#severity-levels">Severity Levels</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#available-conditions">Available Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#rule-files">Rule Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#notable-rules">Notable Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#writing-custom-rules">Writing Custom Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#built-in-plugins">Built-in Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-call-graph">plugin_call_graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-cfg-anomaly">plugin_cfg_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-cfg-advanced">plugin_cfg_advanced</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-complexity-analyzer">plugin_complexity_analyzer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-memory-safety">plugin_memory_safety</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-memory-behavior">plugin_memory_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-opcode-anomaly">plugin_opcode_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-string-deobfuscator">plugin_string_deobfuscator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#running-plugins">Running Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#writing-custom-plugins">Writing Custom Plugins</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli_reference.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#arguments">Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#output-options">Output Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#analysis-options">Analysis Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#batch-operations">Batch Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#watch-mode">Watch Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#ebpf-monitor">eBPF Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output_formats.html">Output Formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#html-report">HTML Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#json-report">JSON Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#sarif-report">SARIF Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#csv-report">CSV Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#dynamic-cfg-dot">Dynamic CFG DOT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-map">Module Map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#plugin-interface">Plugin Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#rule-engine">Rule Engine</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #1a1a2e" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WASMShark</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CFG Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/cfg_analysis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="ebpf_monitor.html" class="btn btn-neutral float-left" title="eBPF Runtime Monitor" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rules.html" class="btn btn-neutral float-right" title="Detection Rules" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cfg-analysis">
+<h1>CFG Analysis<a class="headerlink" href="#cfg-analysis" title="Link to this heading"></a></h1>
+<p>WASMShark implements advanced control flow graph analysis algorithms from
+compiler theory to detect structural anomalies that indicate obfuscation.</p>
+<section id="algorithms">
+<h2>Algorithms<a class="headerlink" href="#algorithms" title="Link to this heading"></a></h2>
+<section id="lengauer-tarjan-dominance-tree">
+<h3>Lengauer-Tarjan Dominance Tree<a class="headerlink" href="#lengauer-tarjan-dominance-tree" title="Link to this heading"></a></h3>
+<p>Computes immediate dominators for every basic block using the Cooper et al.
+iterative algorithm. Enables:</p>
+<ul class="simple">
+<li><p>Accurate natural loop detection</p></li>
+<li><p>Loop nesting depth measurement</p></li>
+<li><p>Dominator tree depth analysis (deep trees = complex nested control flow)</p></li>
+</ul>
+</section>
+<section id="tarjan-s-scc-algorithm">
+<h3>Tarjan’s SCC Algorithm<a class="headerlink" href="#tarjan-s-scc-algorithm" title="Link to this heading"></a></h3>
+<p>Identifies strongly connected components — groups of blocks where every
+block can reach every other block. Non-trivial SCCs indicate cyclic control
+flow (loops). Large SCCs with multiple entry points indicate <strong>irreducible
+control flow</strong> — a strong obfuscation indicator.</p>
+</section>
+<section id="natural-loop-detection">
+<h3>Natural Loop Detection<a class="headerlink" href="#natural-loop-detection" title="Link to this heading"></a></h3>
+<p>A natural loop exists for every back edge (an edge from a node to one of
+its dominators). WASMShark identifies:</p>
+<ul class="simple">
+<li><p>Loop header (entry point)</p></li>
+<li><p>Loop body (all nodes in the loop)</p></li>
+<li><p>Back edge source</p></li>
+<li><p>Loop nesting depth</p></li>
+</ul>
+</section>
+<section id="irreducible-cfg-detection">
+<h3>Irreducible CFG Detection<a class="headerlink" href="#irreducible-cfg-detection" title="Link to this heading"></a></h3>
+<p>A CFG is <strong>irreducible</strong> when a non-trivial SCC has multiple entry points
+from outside the SCC. This cannot occur in normal structured code and is
+a strong indicator of obfuscated control flow.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[HIGH] IRREDUCIBLE_CFG
+3 nodes in irreducible CFG regions — non-structured control flow,
+strong obfuscation indicator
+</pre></div>
+</div>
+</section>
+<section id="path-count-estimation">
+<h3>Path Count Estimation<a class="headerlink" href="#path-count-estimation" title="Link to this heading"></a></h3>
+<p>WASMShark estimates the number of distinct execution paths through a
+function using dynamic programming on the DAG (ignoring back edges).</p>
+<p>Exponential path counts (&gt;1,000,000) indicate path-explosion obfuscation:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[HIGH] PATH_EXPLOSION
+Estimated 1.2e+08 execution paths — exponential path complexity
+</pre></div>
+</div>
+</section>
+<section id="cfg-fingerprinting">
+<h3>CFG Fingerprinting<a class="headerlink" href="#cfg-fingerprinting" title="Link to this heading"></a></h3>
+<p>Each function’s CFG topology is hashed to a 12-character fingerprint.
+Functions sharing the same fingerprint have identical control flow structure
+— useful for detecting clone-padding obfuscation.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CFG clone group detected: func[0] and func[3] identical topology
+fingerprint=6b9337ea99af
+</pre></div>
+</div>
+</section>
+</section>
+<section id="running-cfg-analysis">
+<h2>Running CFG Analysis<a class="headerlink" href="#running-cfg-analysis" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run with CFG advanced plugin</span>
+python3<span class="w"> </span>wasmshark.py<span class="w"> </span>sample_obfuscated_loader.wasm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--plugins<span class="w"> </span>./plugins/<span class="w"> </span>-v
+
+<span class="c1"># Export CFG anomaly DOT files</span>
+python3<span class="w"> </span>wasmshark.py<span class="w"> </span>sample_obfuscated_loader.wasm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--plugins<span class="w"> </span>./plugins/<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cfg-anomaly<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cfg-overview<span class="w"> </span>./cfgs/
+
+<span class="c1"># Render SVG</span>
+dot<span class="w"> </span>-Tsvg<span class="w"> </span>cfgs/module_overview.dot<span class="w"> </span>-o<span class="w"> </span>cfgs/overview.svg
+xdg-open<span class="w"> </span>cfgs/overview.svg
+</pre></div>
+</div>
+</section>
+<section id="anomaly-detection">
+<h2>Anomaly Detection<a class="headerlink" href="#anomaly-detection" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">plugin_cfg_anomaly.py</span></code> plugin detects:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 15.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Anomaly</p></th>
+<th class="head"><p>Severity</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>IRREDUCIBLE_CFG</p></td>
+<td><p>HIGH</p></td>
+<td><p>Non-structured control flow — obfuscation</p></td>
+</tr>
+<tr class="row-odd"><td><p>DEEP_LOOP_NESTING</p></td>
+<td><p>HIGH</p></td>
+<td><p>Loop nesting depth ≥ 4</p></td>
+</tr>
+<tr class="row-even"><td><p>PATH_EXPLOSION</p></td>
+<td><p>HIGH</p></td>
+<td><p>&gt;1,000,000 estimated execution paths</p></td>
+</tr>
+<tr class="row-odd"><td><p>LARGE_SCC</p></td>
+<td><p>HIGH</p></td>
+<td><p>SCC with &gt;5 nodes</p></td>
+</tr>
+<tr class="row-even"><td><p>DISPATCHER_BLOCK</p></td>
+<td><p>HIGH</p></td>
+<td><p>Block with &gt;4 successors (flattening)</p></td>
+</tr>
+<tr class="row-odd"><td><p>UNREACHABLE_BLOCKS</p></td>
+<td><p>MEDIUM</p></td>
+<td><p>Dead code — never reachable from entry</p></td>
+</tr>
+<tr class="row-even"><td><p>HIGH_CYCLOMATIC</p></td>
+<td><p>HIGH</p></td>
+<td><p>Cyclomatic complexity &gt; 50</p></td>
+</tr>
+<tr class="row-odd"><td><p>CFG_CLONE_CLUSTER</p></td>
+<td><p>MEDIUM</p></td>
+<td><p>Many functions with identical CFG shape</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-overview-export">
+<h2>Module Overview Export<a class="headerlink" href="#module-overview-export" title="Link to this heading"></a></h2>
+<p>The module overview DOT file shows all functions as nodes:</p>
+<ul class="simple">
+<li><p>Node size reflects function size in bytes</p></li>
+<li><p>Red nodes have anomaly findings</p></li>
+<li><p>Yellow nodes are moderately suspicious</p></li>
+<li><p>Green nodes are clean</p></li>
+<li><p>Edge direction shows call relationships</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dot<span class="w"> </span>-Tsvg<span class="w"> </span>cfgs/module_overview.dot<span class="w"> </span>-o<span class="w"> </span>cfgs/overview.svg
+firefox<span class="w"> </span>cfgs/overview.svg
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ebpf_monitor.html" class="btn btn-neutral float-left" title="eBPF Runtime Monitor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rules.html" class="btn btn-neutral float-right" title="Detection Rules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+<div role="contentinfo">
+  <p>
+    &copy; Copyright 2025, WASMShark |
+    Designed by <a href="https://github.com/dhruthan" target="_blank">Dhruthan</a>
+  </p>
+</div>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

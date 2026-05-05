@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture &mdash; WASMShark — WebAssembly Malware Analyzer</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b2a7c96b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Output Formats" href="output_formats.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #1a1a2e" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            WASMShark
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-1-clone-and-setup">Step 1 — Clone and Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-2-python-dependencies">Step 2 — Python Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-3-ebpf-runtime-monitor">Step 3 — eBPF Runtime Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-4-wasabi-dynamic-instrumentation">Step 4 — Wasabi Dynamic Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-5-node-js-and-long-js">Step 5 — Node.js and long.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-6-wasmtime-for-ebpf-demos">Step 6 — wasmtime (for eBPF demos)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-7-graphviz-for-cfg-visualization">Step 7 — Graphviz (for CFG visualization)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#step-8-generate-test-samples">Step 8 — Generate Test Samples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verify-installation">Verify Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-scan">Basic Scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#full-analysis">Full Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#static-dynamic-analysis">Static + Dynamic Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#view-dynamic-cfg">View Dynamic CFG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#directory-scan-with-csv">Directory Scan with CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#diff-two-samples">Diff Two Samples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#ebpf-runtime-monitor">eBPF Runtime Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#w-x-memory-detection">W+X Memory Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#watch-mode">Watch Mode</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Analysis Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="static_analysis.html">Static Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#binary-parser">Binary Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#disassembler">Disassembler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="static_analysis.html#per-function-metrics">Per-Function Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#cfg-builder">CFG Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#taint-analysis">Taint Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#entropy-analysis">Entropy Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#crypto-constant-detection">Crypto Constant Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#scoring-engine">Scoring Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_analysis.html#import-fingerprinting-imphash">Import Fingerprinting (Imphash)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_analysis.html">Dynamic Analysis (Wasabi)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#runtime-metrics-collected">Runtime Metrics Collected</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#static-dynamic-correlations">Static ↔ Dynamic Correlations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#state-machine-extraction">State Machine Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#dynamic-cfg-reconstruction">Dynamic CFG Reconstruction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dynamic_analysis.html#cfg-node-colors">CFG Node Colors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_analysis.html#supported-samples">Supported Samples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ebpf_monitor.html">eBPF Runtime Monitor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#how-it-works">How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#alert-levels">Alert Levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#w-x-memory-detection-demo">W+X Memory Detection Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#runtime-report-fields">Runtime Report Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebpf_monitor.html#threat-score-calculation">Threat Score Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cfg_analysis.html">CFG Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cfg_analysis.html#algorithms">Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#lengauer-tarjan-dominance-tree">Lengauer-Tarjan Dominance Tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#tarjan-s-scc-algorithm">Tarjan’s SCC Algorithm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#natural-loop-detection">Natural Loop Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#irreducible-cfg-detection">Irreducible CFG Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#path-count-estimation">Path Count Estimation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cfg_analysis.html#cfg-fingerprinting">CFG Fingerprinting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cfg_analysis.html#running-cfg-analysis">Running CFG Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cfg_analysis.html#anomaly-detection">Anomaly Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cfg_analysis.html#module-overview-export">Module Overview Export</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Detection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Detection Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#rule-format">Rule Format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rules.html#severity-levels">Severity Levels</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#available-conditions">Available Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#rule-files">Rule Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#notable-rules">Notable Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html#writing-custom-rules">Writing Custom Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#built-in-plugins">Built-in Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-call-graph">plugin_call_graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-cfg-anomaly">plugin_cfg_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-cfg-advanced">plugin_cfg_advanced</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-complexity-analyzer">plugin_complexity_analyzer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-memory-safety">plugin_memory_safety</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-memory-behavior">plugin_memory_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-opcode-anomaly">plugin_opcode_anomaly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins.html#plugin-string-deobfuscator">plugin_string_deobfuscator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#running-plugins">Running Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#writing-custom-plugins">Writing Custom Plugins</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cli_reference.html">CLI Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#arguments">Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#output-options">Output Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#analysis-options">Analysis Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#batch-operations">Batch Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#watch-mode">Watch Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_reference.html#ebpf-monitor">eBPF Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output_formats.html">Output Formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#html-report">HTML Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#json-report">JSON Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#sarif-report">SARIF Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#csv-report">CSV Report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_formats.html#dynamic-cfg-dot">Dynamic CFG DOT</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-map">Module Map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plugin-interface">Plugin Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rule-engine">Rule Engine</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #1a1a2e" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">WASMShark</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Architecture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="output_formats.html" class="btn btn-neutral float-left" title="Output Formats" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Link to this heading"></a></h1>
+<p>WASMShark is composed of three independent analysis layers that each
+produce a verdict, which are then correlated for high-confidence detection.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────────┐
+│                        WASMShark                            │
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   STATIC    │  │   DYNAMIC   │  │   eBPF RUNTIME      │  │
+│  │  ANALYSIS   │  │  (Wasabi)   │  │    MONITOR          │  │
+│  │             │  │             │  │                     │  │
+│  │ • Parser    │  │ • Instr     │  │ • execve()          │  │
+│  │ • CFG       │  │   counting  │  │ • mmap W+X          │  │
+│  │ • Taint     │  │ • Call graph│  │ • mprotect EXEC     │  │
+│  │ • Entropy   │  │ • State     │  │ • connect()         │  │
+│  │ • Rules     │  │   machine   │  │ • /proc monitor     │  │
+│  │ • Plugins   │  │ • Dyn CFG   │  │                     │  │
+│  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘  │
+│         │                │                    │             │
+│         └────────────────┴────────────────────┘             │
+│                          │                                  │
+│                ┌─────────┴──────────┐                       │
+│                │     CORRELATOR     │                       │
+│                │                    │                       │
+│                │ CONFIRMED_AUTORUN  │                       │
+│                │   CONFIRMED_XOR    │                       │
+│                └─────────┬──────────┘                       │
+│                          │                                  │
+│                   ┌──────┴──────┐                           │
+│                   │   VERDICT   │                           │
+│                   │ MALICIOUS   │                           │
+│                   │ 100.0/100   │                           │
+│                   └─────────────┘                           │
+└─────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+<section id="module-map">
+<h2>Module Map<a class="headerlink" href="#module-map" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Responsibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark.py</span></code></p></td>
+<td><p>CLI entry point, orchestrates all modules</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_core.py</span></code></p></td>
+<td><p>Parser, disassembler, CFG builder, taint analysis, rule engine, scoring, HTML/JSON/SARIF generation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_advanced.py</span></code></p></td>
+<td><p>WASI capability analyzer, loop characterizer, obfuscation classifier, section anomaly detector, scan history</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_cfg_analysis.py</span></code></p></td>
+<td><p>Dominance tree, SCC, natural loops, irreducibility, path counting, CFG fingerprinting</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_dynamic.py</span></code></p></td>
+<td><p>State machine extraction, dynamic CFG reconstruction, static/dynamic divergence analysis</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_wasabi.py</span></code></p></td>
+<td><p>Wasabi instrumentation runner, Node.js integration, analysis JS, result parser</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_ebpf.py</span></code></p></td>
+<td><p>bpftrace eBPF monitor, /proc polling, alert generation, runtime report</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_watch.py</span></code></p></td>
+<td><p>File system watcher, CI/CD integration</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wasmshark_yara.py</span></code></p></td>
+<td><p>YARA rule integration (optional)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-flow">
+<h2>Data Flow<a class="headerlink" href="#data-flow" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>WASM binary
+    │
+    ▼
+WASMParser.parse()
+    │ AnalysisReport
+    ▼
+ScoringEngine.score()
+    │
+    ├──► RuleEngine.evaluate()
+    │        │ matched_rules, findings
+    │
+    ├──► PluginManager.run()
+    │        │ plugin_results
+    │
+    ├──► WasabiRunner.run()          (--wasabi)
+    │        │ WasabiResult
+    │        ▼
+    │    extract_state_machine()
+    │    reconstruct_dynamic_cfg()
+    │    analyze_divergence()
+    │
+    ├──► generate_html_report()      (--html)
+    ├──► to_json_report()            (--json)
+    └──► to_sarif()                  (--sarif)
+</pre></div>
+</div>
+</section>
+<section id="plugin-interface">
+<h2>Plugin Interface<a class="headerlink" href="#plugin-interface" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">WASMPlugin</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span>        <span class="nb">str</span>   <span class="c1"># Plugin identifier</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>   <span class="c1"># Human-readable description</span>
+    <span class="n">version</span><span class="p">:</span>     <span class="nb">str</span>   <span class="c1"># Version string</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">AnalysisReport</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Receive the complete analysis report.</span>
+<span class="sd">        Return a dict of plugin results.</span>
+<span class="sd">        Keys should be snake_case strings.</span>
+<span class="sd">        Must include a &#39;summary&#39; key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="rule-engine">
+<h2>Rule Engine<a class="headerlink" href="#rule-engine" title="Link to this heading"></a></h2>
+<p>Rules are parsed from <code class="docutils literal notranslate"><span class="pre">.wsr</span></code> files using a simple block format.
+The rule engine evaluates conditions against the <code class="docutils literal notranslate"><span class="pre">AnalysisReport</span></code>
+object and creates <code class="docutils literal notranslate"><span class="pre">Finding</span></code> objects for each match.</p>
+<p>Condition evaluation supports:</p>
+<ul class="simple">
+<li><p>String matching against report fields</p></li>
+<li><p>Numeric comparisons (<code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>)</p></li>
+<li><p>Boolean flags (<code class="docutils literal notranslate"><span class="pre">has_start_func</span></code>, <code class="docutils literal notranslate"><span class="pre">is_wasi</span></code>, etc.)</p></li>
+<li><p>Crypto constant presence checks</p></li>
+<li><p>Score threshold checks</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="output_formats.html" class="btn btn-neutral float-left" title="Output Formats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+<div role="contentinfo">
+  <p>
+    &copy; Copyright 2025, WASMShark |
+    Designed by <a href="https://github.com/dhruthan" target="_blank">Dhruthan</a>
+  </p>
+</div>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

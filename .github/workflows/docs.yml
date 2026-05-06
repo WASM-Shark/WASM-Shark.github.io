@@ -25,6 +25,9 @@ jobs:
       - name: Build HTML docs
         run: sphinx-build -b html docs/ docs/_build/html
 
+      - name: Copy sitemap to build output
+        run: cp docs/_static/sitemap.xml docs/_build/html/sitemap.xml
+
       - name: Add .nojekyll
         run: touch docs/_build/html/.nojekyll
 
